@@ -13,7 +13,7 @@ main{width:min(100%,420px);padding:25px 19px 22px;border:1px solid #347cff88;bor
 main:before{content:"";position:absolute;inset:0;border-radius:27px;padding:1px;background:linear-gradient(130deg,#12dfff,#693bff,#c12cff,#12dfff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .ring-wrap{height:178px;display:grid;place-items:center;position:relative;margin:0 auto 12px}.ring{width:150px;height:150px;border-radius:50%;background:conic-gradient(from 0deg,var(--cyan),var(--blue),var(--violet),#ec46ff,var(--cyan));padding:7px;animation:spin 2.2s linear infinite;filter:drop-shadow(0 0 13px #2b8cffaa)}.ring:before{content:"";display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#101c4a,#080e2b 70%);border:1px solid #79eaff88}.shield{position:absolute;font-size:48px;text-shadow:0 0 20px #1acbff}.orbit{position:absolute;width:174px;height:174px;border:1px solid #1c9cff55;border-radius:50%;animation:spin 5s linear infinite reverse}.orbit:after{content:"";position:absolute;width:9px;height:9px;left:17px;top:28px;border-radius:50%;background:#20eaff;box-shadow:0 0 14px #20eaff}
 @keyframes spin{to{transform:rotate(360deg)}}h1{font-size:22px;margin:3px 0 14px;letter-spacing:.2px}.sub{font-size:13px;color:#9fb4e9;margin:0 0 15px}
-.terminal{border:1px solid #3b65c9;border-radius:15px;background:#050a1d;text-align:left;padding:13px 13px 11px;min-height:135px;box-shadow:inset 0 0 20px #163d8b44}.term-head{display:flex;align-items:center;gap:6px;padding-bottom:9px;margin-bottom:8px;border-bottom:1px solid #1b2b57;color:#92a9df;font-size:11px;letter-spacing:1px}.dot{width:7px;height:7px;border-radius:50%;background:#24e89b;box-shadow:0 0 8px #24e89b}.logs{font:12px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;color:#b9d2ff;min-height:77px;white-space:nowrap;overflow:hidden;text-overflow:clip}.line{white-space:nowrap;display:block;min-height:23px}.line:before{content:"> ";color:#20ddff}.cursor{display:inline-block;width:6px;height:13px;background:#20ddff;vertical-align:-2px;animation:blink .8s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.terminal{border:1px solid #3b65c9;border-radius:15px;background:#050a1d;text-align:left;padding:13px 13px 11px;min-height:135px;box-shadow:inset 0 0 20px #163d8b44}.term-head{display:flex;align-items:center;gap:6px;padding-bottom:9px;margin-bottom:8px;border-bottom:1px solid #1b2b57;color:#92a9df;font-size:11px;letter-spacing:1px}.dot{width:7px;height:7px;border-radius:50%;background:#24e89b;box-shadow:0 0 8px #24e89b}.logs{font:12px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;color:#b9d2ff;min-height:77px;white-space:nowrap;overflow:hidden;text-overflow:clip}.line{white-space:nowrap;overflow:hidden}.line:before{content:"> ";color:#20ddff}.cursor{display:inline-block;width:6px;height:13px;background:#20ddff;vertical-align:-2px;animation:blink .8s steps(2) infinite}@keyframes blink{50%{opacity:0}}
 .progress{height:5px;border-radius:10px;background:#172653;margin:14px 0 0;overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,#12dfff,#733cff,#dc3cff);border-radius:10px;transition:width .5s}
 .result{display:none;margin-top:17px;padding:15px 10px;border:1px solid #1ce887;border-radius:16px;background:linear-gradient(120deg,#063d36,#082b36);box-shadow:0 0 20px #00e88733}.check{width:40px;height:40px;margin:0 auto 7px;border-radius:50%;display:grid;place-items:center;background:#12d96f;color:#032719;font-size:26px;font-weight:900;box-shadow:0 0 20px #17ef86}.verified{font-size:21px;font-weight:850;color:#68ffb0}.status{font-size:11px;letter-spacing:1.4px;color:#c4ffe0;margin-top:4px}.continue{display:none;width:100%;border:0;border-radius:14px;padding:15px;margin-top:14px;background:linear-gradient(100deg,#0bb9ef,#315dff,#a52bfa);color:white;font-size:16px;font-weight:800;box-shadow:0 7px 22px #315dff55}.hint{font-size:11px;color:#7188c4;margin:12px 0 0}
 body.done .ring{animation:none;background:conic-gradient(#18ee8b,#10c98d,#18ee8b)}body.done .shield{color:#36ff9d}body.done .result,body.done .continue{display:block}body.done .progress{display:none}
@@ -21,31 +21,73 @@ body.done .ring{animation:none;background:conic-gradient(#18ee8b,#10c98d,#18ee8b
 <body><main>
 <div class="ring-wrap"><div class="orbit"></div><div class="ring"></div><div class="shield">⬡</div></div>
 <h1>Account Verification</h1><p class="sub">Secure device and account check</p>
-<section class="terminal" aria-live="polite"><div class="term-head"><span class="dot"></span> LIVE VERIFICATION LOG</div><div class="logs" id="logs"><div class="line" id="currentLine"></div><span class="cursor" id="cursor"></span></div><div class="progress"><div class="bar" id="bar"></div></div></section>
+<section class="terminal" aria-live="polite"><div class="term-head"><span class="dot"></span> LIVE VERIFICATION LOG</div><div class="logs" id="logs"><span class="line" id="statusLine"></span><span class="cursor" id="cursor"></span></div><div class="progress"><div class="bar" id="bar"></div></div></section>
 <section class="result" id="result"><div class="check">✓</div><div class="verified">Verified</div><div class="status">STATUS: VERIFIED</div></section>
 <button class="continue" id="continue">Continue to Bot</button>
 <p class="hint" id="hint">Keep this window open while verification is running.</p>
 </main>
 <script>
 (()=>{
- const tg=window.Telegram&&window.Telegram.WebApp,params=new URLSearchParams(location.search),botId=params.get('bot_id')||'';
- const currentLine=document.getElementById('currentLine'),cursor=document.getElementById('cursor'),bar=document.getElementById('bar'),hint=document.getElementById('hint');
+ const tg=window.Telegram&&window.Telegram.WebApp;
+ const params=new URLSearchParams(location.search);
+ const botId=params.get('bot_id')||'';
+ const statusLine=document.getElementById('statusLine');
+ const cursor=document.getElementById('cursor');
+ const bar=document.getElementById('bar');
+ const hint=document.getElementById('hint');
  if(tg){tg.ready();tg.expand();}
- const wait=ms=>new Promise(r=>setTimeout(r,ms));
- async function typeLine(text){
-   currentLine.textContent='';
-   for(const ch of text){currentLine.textContent+=ch;await wait(ch===' '?45:65);}
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ async function typeStatus(text){
+   statusLine.textContent='';
+   for(let i=0;i<text.length;i++){
+     statusLine.textContent+=text[i];
+     await wait(28);
+   }
  }
- function device(){let id=localStorage.getItem('botworld_device_id');if(!id){id=(crypto&&crypto.randomUUID)?crypto.randomUUID():'device-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);localStorage.setItem('botworld_device_id',id);}return id;}
+ function getDeviceId(){
+   let id=localStorage.getItem('botworld_device_id');
+   if(!id){
+     id=(crypto&&crypto.randomUUID)?crypto.randomUUID():'device-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+     localStorage.setItem('botworld_device_id',id);
+   }
+   return id;
+ }
  async function run(){
-  if(!tg||!tg.initData){await typeLine('Open this page from the Verify button in Telegram.');hint.textContent='Telegram session is missing.';return;}
-  if(!botId){await typeLine('Bot information is missing.');hint.textContent='Return to your bot and open verification again.';return;}
-  let id;try{id=device();}catch(e){await typeLine('Device storage is unavailable.');hint.textContent='Allow site storage and try again.';return;}
-  const steps=['Verifying your account...','Checking Telegram session...','Preparing secure verification request...','Sending verification request...'];
-  for(let i=0;i<steps.length;i++){await typeLine(steps[i]);bar.style.width=((i+1)/steps.length*88)+'%';await wait(220);}
-  await typeLine('Waiting for Telegram to confirm...');bar.style.width='96%';
-  try{tg.sendData(JSON.stringify({bot_id:botId,init_data:tg.initData,device_id:id}));}
-  catch(e){await typeLine('Could not send verification request.');hint.textContent='Close this page and try again.';}
+   if(!botId){
+     await typeStatus('Verification link is incomplete.');
+     hint.textContent='Return to your bot and tap Verify Identity again.';
+     return;
+   }
+   if(!tg||typeof tg.sendData!=='function'||!tg.initData){
+     await typeStatus('Telegram session unavailable.');
+     hint.textContent='This app did not open a Telegram Web App session. Open Verify Identity from the bot chat. If this is a Telegram clone, it must support Telegram Web Apps.';
+     return;
+   }
+   let deviceId;
+   try{deviceId=getDeviceId();}
+   catch(e){
+     await typeStatus('Device storage unavailable.');
+     hint.textContent='Allow site storage in this app, then try again.';
+     return;
+   }
+   const steps=[
+     'Preparing account verification...',
+     'Reading secure Telegram session...',
+     'Preparing device registration...',
+     'Submitting verification request to bot...'
+   ];
+   for(let i=0;i<steps.length;i++){
+     await typeStatus(steps[i]);
+     bar.style.width=((i+1)/steps.length*100)+'%';
+     await wait(180);
+   }
+   hint.textContent='Request submitted. The bot is now checking your Telegram account and device.';
+   try{
+     tg.sendData(JSON.stringify({bot_id:botId,init_data:tg.initData,device_id:deviceId}));
+   }catch(e){
+     await typeStatus('Could not submit verification request.');
+     hint.textContent='Return to the bot and try again.';
+   }
  }
  document.getElementById('continue').addEventListener('click',()=>{if(tg)tg.close();else history.back();});
  run();
