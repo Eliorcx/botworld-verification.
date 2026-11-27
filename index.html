@@ -2,83 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="color-scheme" content="dark">
-  <title>Verify Your Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Botworld Account Verification</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#101827;color:#fff;
-    font-family:Arial,sans-serif;display:grid;place-items:center;padding:22px}
-    .card{width:min(100%,420px);background:#1b2940;border:1px solid #30435f;border-radius:20px;
-    padding:28px 22px;text-align:center;box-shadow:0 16px 45px #0005}
-    .shield{font-size:48px;margin-bottom:12px}h1{font-size:24px;margin:8px 0 12px}
-    p{color:#c7d2e2;line-height:1.55;font-size:15px}
-    button{width:100%;border:0;border-radius:12px;padding:15px 18px;margin-top:18px;
-    background:#2ea6ff;color:#061522;font-weight:700;font-size:16px}
-    button:disabled{opacity:.6}#status{min-height:24px;margin-top:14px;color:#c7d2e2;font-size:13px}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--tg-theme-bg-color,#17212b);color:var(--tg-theme-text-color,#fff);font-family:system-ui,sans-serif}main{width:min(100%,420px);text-align:center}.mark{width:86px;height:86px;margin:0 auto 22px;border-radius:26px;display:grid;place-items:center;background:#2481cc;font-size:42px}h1{font-size:26px;margin:0 0 12px}p{color:var(--tg-theme-hint-color,#aab7c4);line-height:1.55;margin:0 0 24px}button{width:100%;border:0;border-radius:14px;padding:16px;background:var(--tg-theme-button-color,#2481cc);color:var(--tg-theme-button-text-color,#fff);font-size:17px;font-weight:700}button:disabled{opacity:.6}#result{margin-top:18px;min-height:24px;font-weight:600}
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="shield">🛡️</div>
-    <h1>Verify Your Account</h1>
-    <p>Tap the button below to confirm your Telegram account and register this app's device identifier for this bot.</p>
-    <button id="verify">Verify</button>
-    <div id="status">Ready to verify.</div>
-  </main>
+<main>
+  <div class="mark">✓</div>
+  <h1>Verify Your Account</h1>
+  <p>Confirm your Telegram account and continue to the bot.</p>
+  <button id="verify">Verify</button>
+  <div id="result" role="status" aria-live="polite"></div>
+</main>
 <script>
 (() => {
   const tg = window.Telegram && window.Telegram.WebApp;
-  const button = document.getElementById("verify");
-  const status = document.getElementById("status");
-  const params = new URLSearchParams(location.search);
-  const botId = params.get("bot_id") || "";
-
-  function getDeviceId() {
-    const key = "botworld_device_registration_v1";
-    let id = "";
-    try { id = localStorage.getItem(key) || ""; } catch (_) {}
-    if (!id) {
-      if (window.crypto && crypto.randomUUID) id = crypto.randomUUID();
-      else {
-        const bytes = new Uint8Array(24);
-        if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
-        else for (let i=0;i<bytes.length;i++) bytes[i]=Math.floor(Math.random()*256);
-        id = Array.from(bytes, b => b.toString(16).padStart(2,"0")).join("");
-      }
-      try { localStorage.setItem(key, id); } catch (_) {}
-    }
-    return id;
-  }
-
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  button.addEventListener("click", () => {
+  const button = document.getElementById('verify');
+  const result = document.getElementById('result');
+  const params = new URLSearchParams(window.location.search);
+  const botId = params.get('bot_id') || '';
+  if (tg) { tg.ready(); tg.expand(); }
+  button.addEventListener('click', () => {
     if (!tg || !tg.initData) {
-      status.textContent = "Open this page using the Verify button inside the child bot.";
+      result.textContent = 'Please open this page using the Verify button inside the Telegram bot.';
       return;
     }
     if (!botId) {
-      status.textContent = "This verification link is missing its bot information.";
+      result.textContent = 'Bot information is missing. Please reopen Verify from your bot.';
+      return;
+    }
+    let deviceId = '';
+    try {
+      deviceId = localStorage.getItem('botworld_device_id') || '';
+      if (!deviceId) {
+        deviceId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('bw-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+        localStorage.setItem('botworld_device_id', deviceId);
+      }
+    } catch (e) {
+      result.textContent = 'This browser does not allow local device storage. Please enable site storage and try again.';
       return;
     }
     button.disabled = true;
-    status.textContent = "Checking your account and device…";
-    const payload = {
-      status: "verify",
-      bot_id: botId,
-      init_data: tg.initData,
-      device_id: getDeviceId()
-    };
+    result.textContent = 'Sending verification to your bot…';
     try {
-      tg.sendData(JSON.stringify(payload));
-      status.textContent = "Verification submitted. Return to the bot for the result.";
+      tg.sendData(JSON.stringify({bot_id: botId, init_data: tg.initData, device_id: deviceId}));
     } catch (e) {
       button.disabled = false;
-      status.textContent = "Could not submit verification. Please try again.";
+      result.textContent = 'Could not send verification. Please close this page and try again from your bot.';
     }
   });
 })();
