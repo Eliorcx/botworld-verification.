@@ -1,53 +1,50 @@
-<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verify Your Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <title>Botworld Verification</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      padding: 24px; background: var(--tg-theme-bg-color, #17212b);
-      color: var(--tg-theme-text-color, #ffffff);
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-    main { width: min(100%, 420px); text-align: center; }
-    .mark {
-      width: 92px; height: 92px; margin: 0 auto 24px; border-radius: 28px;
-      display: grid; place-items: center; background: #2481cc; font-size: 44px;
-    }
-    h1 { font-size: 27px; margin: 0 0 12px; }
-    p { color: var(--tg-theme-hint-color, #aab7c4); line-height: 1.55; margin: 0 0 26px; }
-    button {
-      width: 100%; border: 0; border-radius: 14px; padding: 16px;
-      background: var(--tg-theme-button-color, #2481cc);
-      color: var(--tg-theme-button-text-color, #fff);
-      font-size: 17px; font-weight: 700; cursor: pointer;
-    }
-    button:disabled { opacity: .6; cursor: wait; }
-    #result { margin-top: 18px; min-height: 24px; font-weight: 600; }
-    .note { font-size: 12px; margin-top: 28px; }
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:24px;background:var(--tg-theme-bg-color,#101827);color:var(--tg-theme-text-color,#f4f7fb);font-family:system-ui,-apple-system,Segoe UI,sans-serif;display:grid;place-items:center}
+    main{width:min(100%,430px);text-align:center;padding:28px 22px;border-radius:22px;background:var(--tg-theme-secondary-bg-color,#1b2638)}
+    .mark{width:76px;height:76px;border-radius:24px;margin:0 auto 20px;display:grid;place-items:center;background:#2764d8;color:white;font-size:36px}
+    h1{font-size:25px;margin:0 0 10px}p{line-height:1.55;color:var(--tg-theme-hint-color,#aab6c8)}
+    button{width:100%;border:0;border-radius:13px;padding:15px 18px;font-size:16px;font-weight:700;background:var(--tg-theme-button-color,#2f75e8);color:var(--tg-theme-button-text-color,#fff);margin-top:14px}
+    button:disabled{opacity:.55}.small{font-size:12px;margin-top:18px}.status{min-height:24px;margin-top:15px;font-size:14px}
   </style>
 </head>
 <body>
-  <main>
-    <div class="mark">✓</div>
-    <h1>Verify Your Account</h1>
-    <p>Press the button below to begin account verification.</p>
-    <button id="verify">Verify</button>
-    <div id="result" role="status" aria-live="polite"></div>
-    <p class="note">Your Telegram account information is used to identify your Botworld account.</p>
-  </main>
-  <script>
-    const tg = window.Telegram && window.Telegram.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    document.getElementById("verify").addEventListener("click", () => {
-      const result = document.getElementById("result");
-      result.textContent = "Verification service is not connected yet. Please try again later.";
-    });
-  </script>
+<main>
+  <div class="mark">✓</div>
+  <h1>Verify Your Account</h1>
+  <p>This check confirms that the Telegram account opening this page belongs to the user who requested verification in this bot.</p>
+  <button id="verify">Verify Account</button>
+  <div class="status" id="status" role="status"></div>
+  <p class="small">Verification is recorded separately for each created bot. Completing it in one bot does not verify you in another.</p>
+</main>
+<script>
+(() => {
+  const tg = window.Telegram && window.Telegram.WebApp;
+  const button = document.getElementById('verify');
+  const status = document.getElementById('status');
+  const params = new URLSearchParams(window.location.search);
+  const session = params.get('session') || '';
+  if (tg) { tg.ready(); tg.expand(); }
+  button.addEventListener('click', () => {
+    if (!tg || !tg.initData) {
+      status.textContent = 'Please open this page using the Verify button inside the Telegram bot.';
+      return;
+    }
+    if (!session) {
+      status.textContent = 'Verification session is missing. Return to the bot and tap Verify again.';
+      return;
+    }
+    button.disabled = true;
+    status.textContent = 'Sending your secure verification response…';
+    tg.sendData(JSON.stringify({init_data: tg.initData, session}));
+  });
+})();
+</script>
 </body>
 </html>
